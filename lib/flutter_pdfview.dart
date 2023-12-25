@@ -39,6 +39,7 @@ class PDFView extends StatefulWidget {
     this.defaultPage = 0,
     this.fitPolicy = FitPolicy.WIDTH,
     this.preventLinkNavigation = false,
+    this.useHybridComposition = false,
   })
       : assert(filePath != null || pdfData != null),
         super(key: key);
@@ -80,6 +81,8 @@ class PDFView extends StatefulWidget {
   final FitPolicy fitPolicy;
   final bool fitEachPage;
   final bool preventLinkNavigation;
+
+  final bool useHybridComposition;
 }
 
 class _PDFViewState extends State<PDFView> {
@@ -101,7 +104,10 @@ class _PDFViewState extends State<PDFView> {
           );
         },
         onCreatePlatformView: (PlatformViewCreationParams params) {
-          return PlatformViewsService.initSurfaceAndroidView(
+          final androidView = widget.useHybridComposition
+              ? PlatformViewsService.initExpensiveAndroidView
+              : PlatformViewsService.initSurfaceAndroidView;
+          return androidView(
             id: params.id,
             viewType: 'plugins.endigo.io/pdfview',
             layoutDirection: TextDirection.rtl,
