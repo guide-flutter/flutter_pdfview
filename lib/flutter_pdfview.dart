@@ -38,6 +38,7 @@ class PDFView extends StatefulWidget {
     this.defaultPage = 0,
     this.fitPolicy = FitPolicy.WIDTH,
     this.preventLinkNavigation = false,
+    this.useHybridComposition = false,
   })  : assert(filePath != null || pdfData != null),
         super(key: key);
 
@@ -115,6 +116,8 @@ class PDFView extends StatefulWidget {
 
   /// Indicates whether or not clicking on links in the PDF document will open the link in a new page. If set to true, link navigation is prevented.
   final bool preventLinkNavigation;
+
+  final bool useHybridComposition;
 }
 
 class _PDFViewState extends State<PDFView> {
@@ -138,7 +141,10 @@ class _PDFViewState extends State<PDFView> {
           );
         },
         onCreatePlatformView: (PlatformViewCreationParams params) {
-          return PlatformViewsService.initSurfaceAndroidView(
+          final initAndroidView =
+              widget.useHybridComposition ? PlatformViewsService.initExpensiveAndroidView : PlatformViewsService.initSurfaceAndroidView;
+
+          return initAndroidView(
             id: params.id,
             viewType: 'plugins.endigo.io/pdfview',
             layoutDirection: TextDirection.rtl,
